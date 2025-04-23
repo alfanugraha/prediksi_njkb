@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import cx_Oracle
+
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
@@ -60,7 +62,21 @@ def prediction(train_df, input_df):
     st.button("Re-run")
     return round(float(rf_pipeline.predict(input_df)[0]), 2)
 
-df_ori = pd.read_csv("data/actual.csv")
+
+# df_ori = pd.read_csv("data/actual.csv")
+username = st.secrets["db_user"] 
+password = st.secrets["db_pass"] 
+ip = st.secrets["ip"] 
+port = st.secrets["port"] 
+service_name = st.secrets["service_name"] 
+dsn_tns = cx_Oracle.makedsn(ip, port, service_name=service_name)
+connection = cx_Oracle.connect(user=username, password=password, dsn=dsn_tns)
+cursor = connection.cursor()
+cursor.execute("SELECT MEREK, BODY_TYPE, HARGA, KENDARAAN, ODOMETER, TIPE_KENDARAAN, JENIS_KENDARAAN, TAHUN_BUAT FROM DATAMART_SCRAPPING_NJKB_V6")
+columns = [col[0] for col in cursor.description]
+# Fetch results
+datamart = cursor.fetchall()
+df_ori = pd.DataFrame(datamart, columns=columns)
 
 # pick kendaraan
 kendaraan_set = list(set(df_ori['KENDARAAN']))
