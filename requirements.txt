@@ -5,3 +5,4 @@ seaborn==0.13.2
 streamlit==1.40.2
 scikit-learn==1.6.1
 cx-Oracle==8.3.0
+streamlit-extras==0.6.0
