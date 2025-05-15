@@ -118,7 +118,12 @@ def training(train_df):
 
 
 def prediction(pipeline, input_df):
-    return round(float(pipeline.predict(input_df)[0]), 2)
+    try:
+        pred = pipeline.predict(input_df)[0]
+        return round(float(pred), 2)
+    except Exception as e:
+        print(f"Error during prediction: {str(e)}")
+        return None
 
 st.set_page_config(page_title="Prediksi", page_icon="📈",)
 
@@ -137,7 +142,13 @@ if check_pickle_file():
         with st.spinner('Prediksi harga...'):
             with open('data/pipeline.pkl', 'rb') as f:
                 rf = pickle.load(f)
+            print(df_input)
             res = prediction(rf, df_input)
-        st.info(f"Prediksi Harga Pasar Rp. {res}")
+        
+        if res is None:
+            st.error("Terjadi kesalahan saat memprediksi harga.")
+        else:
+            # st.info(f"Prediksi Harga Pasar Rp. {res}")
+            st.info(f"Prediksi Harga Pasar Rp. {'{:,.0f}'.format(res).replace(',', '.')}")
 else:
     st.error('File tidak ditemukan! Unduh data pada menu Database')
