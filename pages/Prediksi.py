@@ -67,7 +67,7 @@ def populate_selectbox(df):
     return single_df
 
 def training(train_df):
-    df = train_df.dropna()
+    df = train_df[['KENDARAAN', 'JENIS_KENDARAAN', 'TIPE_KENDARAAN', 'MEREK', 'TAHUN_BUAT', 'ODOMETER', 'HARGA']].dropna()
 
     # Prepare data for modeling
     X = df[['KENDARAAN', 'JENIS_KENDARAAN', 'TIPE_KENDARAAN', 'MEREK', 'TAHUN_BUAT', 'ODOMETER']]
@@ -133,7 +133,7 @@ if check_pickle_file():
         with st.spinner('Training model...'):
             rf_pipeline = training(df_ori)
 
-    if st.sidebar.button('Run'):
+    if st.sidebar.button('Prediksi'):
         with st.spinner('Prediksi harga...'):
             with open('data/pipeline.pkl', 'rb') as f:
                 rf = pickle.load(f)
